@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: tp-foyer
-          image: ahmedhmila/devops-project-back
+          image: mehdihammami244/pfebackend
           ports:
             - containerPort: 8089
           envFrom:
