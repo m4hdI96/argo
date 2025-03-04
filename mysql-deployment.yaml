@@ -1,9 +1,9 @@
+# mysql-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysqldb
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: mysqldb
@@ -13,7 +13,7 @@ spec:
         app: mysqldb
     spec:
       containers:
-      - name: mysqldb
+      - name: mysql
         image: mysql:8.3.0
         env:
         - name: MYSQL_ROOT_PASSWORD
@@ -23,23 +23,21 @@ spec:
         ports:
         - containerPort: 3306
         volumeMounts:
-        - mountPath: /var/lib/mysql
-          name: mysql-data
-        readinessProbe:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
           exec:
-            command:
-            - mysqladmin
-            - ping
-            - "-h"
-            - "localhost"
+            command: ["mysqladmin", "ping", "-h", "localhost"]
           initialDelaySeconds: 30
           periodSeconds: 10
-          failureThreshold: 5
+          timeoutSeconds: 5
       volumes:
-      - name: mysql-data
-        emptyDir: {}
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
 
 ---
+# mysql-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -51,4 +49,3 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  type: ClusterIP
