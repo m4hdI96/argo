@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: angular-app
-          image: mehdihammami244/pfefrontend
+          image: mehdihammami244/pfe-frontend:latest
           ports:
             - containerPort: 85
           volumeMounts:
